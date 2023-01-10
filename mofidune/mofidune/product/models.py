@@ -6,6 +6,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 class Category(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=250)
     parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
 
     class MPTTMeta:
@@ -25,6 +26,7 @@ class Brand(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    slug = models.SlugField(max_length=250)
     is_digital = models.BooleanField(default=False)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = TreeForeignKey(
