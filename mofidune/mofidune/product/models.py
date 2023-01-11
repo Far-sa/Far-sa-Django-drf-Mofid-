@@ -4,10 +4,27 @@ from mptt.models import MPTTModel, TreeForeignKey
 # Create your models here.
 
 
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
+    #! Callable func in model Manager
+    # def isactive(self):
+    #     return self.get_queryset().filter(is_active=True)
+
+
+class ActiveQuerySet(models.QuerySet):
+    def isactive(self):
+        return self.filter(is_active=True)
+
+
 class Category(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=250)
+    is_active = models.BooleanField(default=False)
     parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
+
+    objects = ActiveQuerySet.as_manager()
 
     class MPTTMeta:
         order_insertion_by = ["name"]
@@ -18,6 +35,9 @@ class Category(MPTTModel):
 
 class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    is_active = models.BooleanField(default=False)
+
+    objects = ActiveQuerySet.as_manager()
 
     def __str__(self) -> str:
         return self.name
@@ -34,6 +54,11 @@ class Product(models.Model):
     )
     is_active = models.BooleanField(default=False)
 
+    #! Callable fn
+    # objects = ActiveManager()
+    objects = models.Manager()
+    isactive = ActiveManager()
+
     def __str__(self) -> str:
         return self.name
 
@@ -46,6 +71,9 @@ class ProductLine(models.Model):
         Product, on_delete=models.CASCADE, related_name="product_line"
     )
     is_active = models.BooleanField(default=False)
+    order = models.PositiveBigIntegerField()
+
+    objects = ActiveQuerySet.as_manager()
 
     def __str__(self) -> str:
         return self.product.name

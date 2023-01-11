@@ -45,6 +45,10 @@ class ProductViewSet(viewsets.ViewSet):
     A simple Viewset
     """
 
+    #! Custom model manager
+    # queryset = Product.isactive.all()
+    # queryset = Product.objects.isactive()
+
     queryset = Product.objects.all()
     lookup_field = "slug"
 
