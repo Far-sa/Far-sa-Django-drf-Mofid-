@@ -1,4 +1,5 @@
 from django.core import checks
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
@@ -25,3 +26,25 @@ class OrderField(models.PositiveIntegerField):
             return [checks.Error("OrderField does not match an existing model field")]
 
         return []
+
+    def pre_save(self, model_instance, add):
+        if getattr(model_instance, self.attname) is None:
+            qs = self.model.objects.all()
+            try:
+                query = {
+                    self.unique_for_field: getattr(
+                        model_instance, self.unique_for_field
+                    )
+                }
+                # print(query)
+                qs = qs.filter(**query)
+                # print(self.attname)
+                last_item = qs.latest(self.attname)
+                value = last_item.order + 1
+
+            except ObjectDoesNotExist:
+                value = 1
+            return value
+        else:
+            
+        return super().pre_save(model_instance, add)

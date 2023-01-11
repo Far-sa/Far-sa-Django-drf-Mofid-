@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -71,9 +72,41 @@ class ProductLine(models.Model):
         Product, on_delete=models.CASCADE, related_name="product_line"
     )
     is_active = models.BooleanField(default=False)
-    order = models.PositiveBigIntegerField()
+    order = models.PositiveIntegerField()
 
     objects = ActiveQuerySet.as_manager()
 
+    def clean(self):
+        qs = ProductLine.objects.filter(product=self.product)
+        for obj in qs:
+            if self.id != obj.id and self.order == obj.order:
+                raise ValidationError("Duplicated Value")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(ProductLine, self).save(*args, **kwargs)
+
     def __str__(self) -> str:
         return self.product.name
+
+
+class ProductImage(models.Model):
+    alternative_text = models.CharField(max_length=100)
+    url = models.ImageField(upload_to=None, default="test.jpg")
+    productline = models.ForeignKey(
+        ProductLine, on_delete=models.CASCADE, related_name="product_image"
+    )
+    order = models.PositiveIntegerField()
+
+    def clean(self):
+        qs = ProductImage.objects.filter(productline=self.productline)
+        for obj in qs:
+            if self.id != obj.id and self.order == obj.order:
+                raise ValidationError("Duplicated Data")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(ProductImage, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return str(self.url)
