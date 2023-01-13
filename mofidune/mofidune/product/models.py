@@ -64,6 +64,34 @@ class Product(models.Model):
         return self.name
 
 
+class Attribute(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+
+
+class AttributeValue(models.Model):
+    attribute_value = models.CharField(max_length=200)
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="attribute_value"
+    )
+
+
+class ProductLineAttributeValue(models.Model):
+    attribute_value = models.ForeignKey(
+        AttributeValue,
+        on_delete=models.CASCADE,
+        related_name="product_attribute_value_av",
+    )
+    product_line = models.ForeignKey(
+        "ProductLine",
+        on_delete=models.CASCADE,
+        related_name="product_attribute_value_pl",
+    )
+
+    class Meta:
+        unique_together = ("attribute_value", "product_line")
+
+
 class ProductLine(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     sku = models.CharField(max_length=100)
@@ -73,6 +101,9 @@ class ProductLine(models.Model):
     )
     is_active = models.BooleanField(default=False)
     order = models.PositiveIntegerField()
+    attribute_value = models.ManyToManyField(
+        AttributeValue, through="ProductLineAttributeValue"
+    )
 
     objects = ActiveQuerySet.as_manager()
 
