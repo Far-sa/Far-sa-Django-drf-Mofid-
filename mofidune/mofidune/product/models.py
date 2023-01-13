@@ -87,7 +87,7 @@ class ProductLine(models.Model):
         return super(ProductLine, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return self.product.name
+        return str(self.sku)
 
 
 class ProductImage(models.Model):
