@@ -54,6 +54,7 @@ class Product(models.Model):
         "Category", on_delete=models.SET_NULL, null=True, blank=True
     )
     is_active = models.BooleanField(default=False)
+    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
 
     #! Callable fn
     # objects = ActiveManager()
@@ -97,6 +98,26 @@ class ProductLineAttributeValue(models.Model):
     class Meta:
         unique_together = ("attribute_value", "product_line")
 
+    def clean(self) -> None:
+        qs = (
+            ProductLineAttributeValue.objects.filter(
+                attribute_value=self.attribute_value
+            )
+            .filter(product_line=self.product_line)
+            .exists()
+        )
+        if not qs:
+            iqs = Attribute.objects.filter(
+                attribute_value__product_line_attribute_value=self.product_line
+            ).values_list("pk", flat=True)
+
+            if self.attribute_value.attribute.id in list(iqs):
+                raise ValidationError("Duplicate attribute exist!")
+
+        def save(self, *args, **kwargs):
+            self.full_clean()
+            return super(ProductLineAttributeValue, self).save(*args, **kwargs)
+
 
 class ProductLine(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -112,7 +133,6 @@ class ProductLine(models.Model):
         through="ProductLineAttributeValue",
         related_name="product_line_attribute_value",
     )
-    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
 
     objects = ActiveQuerySet.as_manager()
 
@@ -127,7 +147,7 @@ class ProductLine(models.Model):
         return super(ProductLine, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return str(self.sku)
+        return str(self.product.name)
 
 
 class ProductImage(models.Model):
