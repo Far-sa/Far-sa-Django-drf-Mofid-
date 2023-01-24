@@ -10,18 +10,18 @@ class ActiveManager(models.Manager):
         return super().get_queryset().filter(is_active=True)
 
     #! Callable func in model Manager
-    # def isactive(self):
+    # def is_active(self):
     #     return self.get_queryset().filter(is_active=True)
 
 
 class ActiveQuerySet(models.QuerySet):
-    def isactive(self):
+    def is_active(self):
         return self.filter(is_active=True)
 
 
 class Category(MPTTModel):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=250)
+    name = models.CharField(max_length=235, unique=True)
+    slug = models.SlugField(max_length=255, unique=True)
     is_active = models.BooleanField(default=False)
     parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
 
@@ -34,22 +34,11 @@ class Category(MPTTModel):
         return self.name
 
 
-class Brand(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    is_active = models.BooleanField(default=False)
-
-    objects = ActiveQuerySet.as_manager()
-
-    def __str__(self) -> str:
-        return self.name
-
-
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     slug = models.SlugField(max_length=250)
     is_digital = models.BooleanField(default=False)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = TreeForeignKey(
         "Category", on_delete=models.SET_NULL, null=True, blank=True
     )

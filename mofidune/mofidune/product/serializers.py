@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import (
     Attribute,
     AttributeValue,
-    Brand,
     Category,
     Product,
     ProductImage,
@@ -17,12 +16,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["category_name"]
-
-
-class BrandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Brand
-        exclude = ("id",)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -74,7 +67,6 @@ class ProductLineSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     # brand = BrandSerializer()
-    brand_name = serializers.CharField(source="brand.name")
     # category = CategorySerializer()
     category_name = serializers.CharField(source="category.name")
     product_line = ProductLineSerializer(many=True)
@@ -87,7 +79,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "slug",
             "description",
             # "brand",
-            "brand_name",
             # "category",
             "category_name",
             "product_line",
@@ -107,106 +98,3 @@ class ProductSerializer(serializers.ModelSerializer):
         data.update({"type specification": attr_values})
         # print(data)
         return data
-
-
-# OrderedDict(
-#     [
-#         ("price", "10.00"),
-#         ("sku", "9131411250"),
-#         ("stock_qty", 50),
-#         ("order", 1),
-#         (
-#             "product_image",
-#             [
-#                 OrderedDict(
-#                     [("alternative_text", "1"), ("url", "/test.jpg"), ("order", 1)]
-#                 ),
-#                 OrderedDict(
-#                     [("alternative_text", "2"), ("url", "/test.jpg"), ("order", 2)]
-#                 ),
-#             ],
-#         ),
-#         (
-#             "attribute_value",
-#             [
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "size"), ("id", 4)])),
-#                         ("attribute_value", "1-kg"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "size"), ("id", 4)])),
-#                         ("attribute_value", "3-kg"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "size"), ("id", 4)])),
-#                         ("attribute_value", "5-kg"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "flavour"), ("id", 3)])),
-#                         ("attribute_value", "coconut"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "flavour"), ("id", 3)])),
-#                         ("attribute_value", "oat"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "flavour"), ("id", 3)])),
-#                         ("attribute_value", "seeds"),
-#                     ]
-#                 ),
-#             ],
-#         ),
-#     ]
-# )
-
-
-# OrderedDict(
-#     [
-#         ("price", "200.00"),
-#         ("sku", "9131416245"),
-#         ("stock_qty", 5),
-#         ("order", 1),
-#         (
-#             "product_image",
-#             [
-#                 OrderedDict(
-#                     [("alternative_text", "1"), ("url", "/test.jpg"), ("order", 1)]
-#                 ),
-#                 OrderedDict(
-#                     [("alternative_text", "2"), ("url", "/test.jpg"), ("order", 2)]
-#                 ),
-#                 OrderedDict(
-#                     [("alternative_text", "3"), ("url", "/test.jpg"), ("order", 3)]
-#                 ),
-#             ],
-#         ),
-#         (
-#             "attribute_value",
-#             [
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "color"), ("id", 1)])),
-#                         ("attribute_value", "black"),
-#                     ]
-#                 ),
-#                 OrderedDict(
-#                     [
-#                         ("attribute", OrderedDict([("name", "hard"), ("id", 2)])),
-#                         ("attribute_value", "64"),
-#                     ]
-#                 ),
-#             ],
-#         ),
-#     ]
-# )
