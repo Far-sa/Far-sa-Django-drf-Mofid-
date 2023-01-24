@@ -1,6 +1,6 @@
 import factory
 
-from mofidune.product.models import Brand, Category, Product, ProductLine
+from mofidune.product.models import Category, Product
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
@@ -12,22 +12,24 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     slug = factory.sequence(lambda n: "test_slug_%d" % n)
 
 
+class ProductFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Product
+
+    name = factory.Sequence(lambda n: "test_product_name_%d" % n)
+    pid = factory.Sequence(lambda n: "0000_%d" % n)
+    description = "test_description"
+    is_digital = False
+    is_active = True
+    category = factory.SubFactory(CategoryFactory)
+    # product_type = factory.SubFactory(ProductTypeFactory)
+
+
 # class BrandFactory(factory.django.DjangoModelFactory):
 #     class Meta:
 #         model = Brand
 
 #     name = factory.Sequence(lambda n: "Category_%d" % n)
-
-
-# class ProductFactory(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = Product
-
-#     name = "test_product"
-#     description = "test_description"
-#     is_digital = True
-#     brand = factory.SubFactory(BrandFactory)
-#     category = factory.SubFactory(CategoryFactory)
 
 
 # class ProductLineFactory(factory.django.DjangoModelFactory):
