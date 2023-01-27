@@ -1,6 +1,12 @@
 import factory
 
-from mofidune.product.models import Category, Product
+from mofidune.product.models import (
+    Category,
+    Product,
+    ProductImage,
+    ProductLine,
+    ProductType,
+)
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
@@ -10,6 +16,13 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     # name = "test_category"
     name = factory.Sequence(lambda n: "test_category_%d" % n)
     slug = factory.sequence(lambda n: "test_slug_%d" % n)
+
+
+class ProductTypeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ProductType
+
+    name = "test_type"
 
 
 class ProductFactory(factory.django.DjangoModelFactory):
@@ -22,7 +35,30 @@ class ProductFactory(factory.django.DjangoModelFactory):
     is_digital = False
     is_active = True
     category = factory.SubFactory(CategoryFactory)
-    # product_type = factory.SubFactory(ProductTypeFactory)
+    product_type = factory.SubFactory(ProductTypeFactory)
+
+
+class ProductLineFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ProductLine
+
+    price = 10.00
+    sku = "12345"
+    stock_qty = 1
+    product = factory.SubFactory(ProductFactory)
+    is_active = True
+    order = "1"
+    weight = 100
+    product_type = factory.SubFactory(ProductTypeFactory)
+
+
+class ProductImageFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ProductImage
+
+    alternative_text = "test alternative test"
+    url = "test.jpg"
+    product_line = factory.SubFactory(ProductLineFactory)
 
 
 # class BrandFactory(factory.django.DjangoModelFactory):
@@ -30,15 +66,3 @@ class ProductFactory(factory.django.DjangoModelFactory):
 #         model = Brand
 
 #     name = factory.Sequence(lambda n: "Category_%d" % n)
-
-
-# class ProductLineFactory(factory.django.DjangoModelFactory):
-#     class Meta:
-#         model = ProductLine
-
-#     price = 10.00
-#     sku = "12345"
-#     stock_qty = 1
-#     product = factory.SubFactory(ProductFactory)
-#     is_active = True
-#     order = "1"

@@ -45,7 +45,9 @@ class Product(models.Model):
         "Category", on_delete=models.PROTECT, null=True, blank=True
     )
     is_active = models.BooleanField(default=False)
-    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
+    product_type = models.ForeignKey(
+        "ProductType", on_delete=models.PROTECT, related_name="product_type"
+    )
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
     #! Callable fn
@@ -113,18 +115,23 @@ class ProductLineAttributeValue(models.Model):
 
 class ProductLine(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    sku = models.CharField(max_length=100)
+    sku = models.CharField(max_length=10)
     stock_qty = models.IntegerField()
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="product_line"
+        Product, on_delete=models.PROTECT, related_name="product_line"
     )
     is_active = models.BooleanField(default=False)
     order = models.PositiveIntegerField()
+    weight = models.FloatField()
+    product_type = models.ForeignKey(
+        "ProductType", on_delete=models.PROTECT, related_name="product_line_type"
+    )
     attribute_value = models.ManyToManyField(
         AttributeValue,
         through="ProductLineAttributeValue",
         related_name="product_line_attribute_value",
     )
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
     objects = ActiveQuerySet.as_manager()
 
@@ -145,13 +152,13 @@ class ProductLine(models.Model):
 class ProductImage(models.Model):
     alternative_text = models.CharField(max_length=100)
     url = models.ImageField(upload_to=None, default="test.jpg")
-    productline = models.ForeignKey(
+    product_line = models.ForeignKey(
         ProductLine, on_delete=models.CASCADE, related_name="product_image"
     )
     order = models.PositiveIntegerField()
 
     def clean(self):
-        qs = ProductImage.objects.filter(productline=self.productline)
+        qs = ProductImage.objects.filter(product_line=self.product_line)
         for obj in qs:
             if self.id != obj.id and self.order == obj.order:
                 raise ValidationError("Duplicated Data")
@@ -161,11 +168,12 @@ class ProductImage(models.Model):
         return super(ProductImage, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return str(self.url)
+        return f"{self.product_line.sku}_img"
 
 
 class ProductType(models.Model):
     name = models.CharField(max_length=100)
+    parent = models.ForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
     attribute = models.ManyToManyField(
         Attribute, through="ProductTypeAttribute", related_name="product_type_attribute"
     )
