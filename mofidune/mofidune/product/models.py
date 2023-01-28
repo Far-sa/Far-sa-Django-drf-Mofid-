@@ -48,6 +48,11 @@ class Product(models.Model):
     product_type = models.ForeignKey(
         "ProductType", on_delete=models.PROTECT, related_name="product_type"
     )
+    attribute_value = models.ManyToManyField(
+        "AttributeValue",
+        through="ProductAttributeValue",
+        related_name="product_attr_value",
+    )
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
     #! Callable fn
@@ -59,6 +64,18 @@ class Product(models.Model):
         return self.name
 
 
+class ProductAttributeValue(models.Model):
+    attribute_value = models.ForeignKey(
+        "AttributeValue", on_delete=models.CASCADE, related_name="product_value_av"
+    )
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="product_value_pl"
+    )
+
+    class Meta:
+        unique_together = ("attribute_value", "product")
+
+
 class Attribute(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -68,7 +85,7 @@ class Attribute(models.Model):
 
 
 class AttributeValue(models.Model):
-    attribute_value = models.CharField(max_length=200)
+    attribute_value = models.CharField(max_length=100)
     attribute = models.ForeignKey(
         Attribute, on_delete=models.CASCADE, related_name="attribute_value"
     )
@@ -146,7 +163,7 @@ class ProductLine(models.Model):
         return super(ProductLine, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return str(self.product.name)
+        return str(self.sku)
 
 
 class ProductImage(models.Model):

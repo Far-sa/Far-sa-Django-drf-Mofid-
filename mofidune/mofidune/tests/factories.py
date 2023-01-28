@@ -1,10 +1,13 @@
 import factory
 
 from mofidune.product.models import (
+    Attribute,
+    AttributeValue,
     Category,
     Product,
     ProductImage,
     ProductLine,
+    ProductLineAttributeValue,
     ProductType,
 )
 
@@ -22,7 +25,12 @@ class ProductTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ProductType
 
-    name = "test_type"
+    name = factory.Sequence(lambda n: "test_type_name_%d" % n)
+
+    # @factory.post_generation
+    # def attribute(self, create, extracted, **kwargs):
+    #     if not create or not extracted:
+    #         return self.attribute.add(*extracted)
 
 
 class ProductFactory(factory.django.DjangoModelFactory):
@@ -58,6 +66,30 @@ class ProductImageFactory(factory.django.DjangoModelFactory):
 
     alternative_text = "test alternative test"
     url = "test.jpg"
+    product_line = factory.SubFactory(ProductLineFactory)
+
+
+class AttributeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Attribute
+
+    name = "attribute_name_test"
+    description = "attribute_description_test"
+
+
+class AttributeValueFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AttributeValue
+
+    attribute_value = "attr_test"
+    attribute = factory.SubFactory(AttributeFactory)
+
+
+class ProductLineAttributeValue(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ProductLineAttributeValue
+
+    attribute_value = factory.SubFactory(AttributeValueFactory)
     product_line = factory.SubFactory(ProductLineFactory)
 
 

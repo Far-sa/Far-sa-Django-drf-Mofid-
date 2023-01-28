@@ -159,18 +159,40 @@ class TestProductImageModel:
 
 class TestProductTypeModel:
     def test_str_method(self, product_type_factory):
-        obj = product_type_factory(name="test_product")
-        assert obj.__str__() == "test_product"
+        obj = product_type_factory(name="test_type")
+        assert obj.__str__() == "test_type"
+
+    def test_name_field_max_length(self, product_type_factory):
+        name = "x" * 101
+        obj = product_type_factory(name=name)
+        with pytest.raises(ValidationError):
+            obj.full_clean()
 
 
-# class TestBrandModel:
-#     def test_str_method(self, brand_factory):
-#         # AAA
-#         obj = brand_factory(name="test_brand")
-#         assert obj.__str__() == "test_brand"
+class TestAttributeModel:
+    def test_str_method(self, attribute_factory):
+        obj = attribute_factory(name="test_attribute")
+        assert obj.__str__() == "test_attribute"
+
+    def test_name_field_max_length(self, attribute_factory):
+        name = "x" * 101
+        obj = attribute_factory(name=name)
+        with pytest.raises(ValidationError):
+            obj.full_clean()
 
 
-# class TestProductLineModel:
-#     def test_str_method(self, product_line_factory):
-#         obj = product_line_factory(sku="12345")
-#         assert obj.__str__() == "12345"
+class TestAttributeValueModel:
+    def test_str_method(self, attribute_value_factory, attribute_factory):
+        obj1 = attribute_factory(name="test_attribute")
+        obj2 = attribute_value_factory(attribute_value="test_value", attribute=obj1)
+        assert obj2.__str__() == "test_attribute-test_value"
+
+    def test_name_field_max_length(self, attribute_value_factory):
+        attribute_value = "x" * 101
+        obj = attribute_value_factory(attribute_value=attribute_value)
+        with pytest.raises(ValidationError):
+            obj.full_clean()
+
+
+class TestProductLineModel:
+    pass
