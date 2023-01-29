@@ -8,8 +8,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from sqlparse import format
 
-from .models import Category, Product
-from .serializers import CategorySerializer, ProductSerializer
+from .models import Category, Product, ProductImage, ProductLine
+from .serializers import (
+    CategorySerializer,
+    ProductCategorySerializer,
+    ProductSerializer,
+)
 
 # Create your views here.
 
@@ -19,7 +23,7 @@ class CategoryViewSet(viewsets.ViewSet):
     A simple Viewset
     """
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().is_active()
 
     @extend_schema(responses=CategorySerializer)
     def list(self, request):
@@ -75,11 +79,28 @@ class ProductViewSet(viewsets.ViewSet):
         detail=False,
         url_path=r"category/(?P<category>\w+)/all",
     )
-    def list_product_by_category(self, request, category=None):
+    def list_product_by_category_slug(self, request, slug=None):
         """
         An Endpoint to return Products by Category
         """
-        serializer = ProductSerializer(
-            self.queryset.filter(category__name=category), many=True
+        serializer = ProductCategorySerializer(
+            self.queryset.filter(category__slug=slug)
+            .prefetch_related(
+                "product_line", queryset=ProductLine.objects.order_by("order")
+            )
+            .prefetch_related(
+                "product_line__product_image",
+                queryset=ProductImage.objects.filter("order=1"),
+            ),
+            many=True,
         )
         return Response(serializer.data)
+
+    # def list_product_by_category(self, request, category=None):
+    #     """
+    #     An Endpoint to return Products by Category
+    #     """
+    #     serializer = ProductSerializer(
+    #         self.queryset.filter(category__name=category), many=True
+    #     )
+    #     return Response(serializer.data)

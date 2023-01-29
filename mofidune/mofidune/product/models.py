@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
+
+
 # Create your models here.
 
 
@@ -14,7 +16,7 @@ class ActiveManager(models.Manager):
     #     return self.get_queryset().filter(is_active=True)
 
 
-class ActiveQuerySet(models.QuerySet):
+class IsActiveQuerySet(models.QuerySet):
     def is_active(self):
         return self.filter(is_active=True)
 
@@ -25,7 +27,7 @@ class Category(MPTTModel):
     is_active = models.BooleanField(default=False)
     parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
 
-    objects = ActiveQuerySet.as_manager()
+    objects = IsActiveQuerySet.as_manager()
 
     class MPTTMeta:
         order_insertion_by = ["name"]
@@ -150,7 +152,7 @@ class ProductLine(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
-    objects = ActiveQuerySet.as_manager()
+    objects = IsActiveQuerySet.as_manager()
 
     def clean(self):
         qs = ProductLine.objects.filter(product=self.product)

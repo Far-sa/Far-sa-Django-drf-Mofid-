@@ -11,17 +11,17 @@ from .models import (
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source="name")
+    category = serializers.CharField(source="name")
 
     class Meta:
         model = Category
-        fields = ["category_name"]
+        fields = ["category", "slug"]
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        exclude = ("id", "productline")
+        exclude = ("id", "product_line")
 
 
 class AttributeSerializer(serializers.ModelSerializer):
@@ -86,7 +86,10 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_attribute(self, obj):
-        attribute = Attribute.objects.filter(product_type_attribute__product__id=obj.id)
+        attribute = Attribute.objects.filter(
+            product_type_attribute__product_type__id=obj.id
+        )
+        print("attribute:", attribute)
         return AttributeSerializer(attribute, many=True).data
 
     def to_representation(self, instance):
@@ -97,4 +100,30 @@ class ProductSerializer(serializers.ModelSerializer):
             attr_values.update({key["id"]: key["name"]})
         data.update({"type specification": attr_values})
         # print(data)
+        return data
+
+
+class ProductLineCategorySerializer(serializers.ModelSerializer):
+    product_image = ProductImageSerializer(many=True)
+
+    class Meta:
+        model = ProductLine
+        fields = ["price", "product_image"]
+
+
+class ProductCategorySerializer(serializers.ModelSerializer):
+    product_line = ProductLineCategorySerializer(many=True)
+
+    class Meta:
+        model = Product
+        fields = ["product_line", "name", "slug", "pid", "created_at"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        x = data.pop("product_line")
+        price = x[0]["price"]
+        image = x[0]["product_image"]
+        data.update({"price": price})
+        data.update({"image": image})
+
         return data

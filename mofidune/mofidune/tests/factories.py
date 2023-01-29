@@ -19,6 +19,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     # name = "test_category"
     name = factory.Sequence(lambda n: "test_category_%d" % n)
     slug = factory.sequence(lambda n: "test_slug_%d" % n)
+    # is_active = True
 
 
 class ProductTypeFactory(factory.django.DjangoModelFactory):
