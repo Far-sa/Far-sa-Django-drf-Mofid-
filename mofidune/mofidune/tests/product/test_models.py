@@ -192,7 +192,3 @@ class TestAttributeValueModel:
         obj = attribute_value_factory(attribute_value=attribute_value)
         with pytest.raises(ValidationError):
             obj.full_clean()
-
-
-class TestProductLineModel:
-    pass

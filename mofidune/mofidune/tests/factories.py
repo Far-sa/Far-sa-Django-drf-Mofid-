@@ -85,7 +85,7 @@ class AttributeValueFactory(factory.django.DjangoModelFactory):
     attribute = factory.SubFactory(AttributeFactory)
 
 
-class ProductLineAttributeValue(factory.django.DjangoModelFactory):
+class ProductLineAttributeValues(factory.django.DjangoModelFactory):
     class Meta:
         model = ProductLineAttributeValue
 

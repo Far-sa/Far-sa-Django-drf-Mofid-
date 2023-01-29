@@ -36,13 +36,17 @@ class AttributeValueInline(admin.TabularInline):
     model = AttributeValue.product_line_attribute_value.through
 
 
+class AttributeValueProductInline(admin.TabularInline):
+    model = AttributeValue.product_attr_value.through
+
+
 class ProductLineInline(EditLinkInline, admin.TabularInline):
     model = ProductLine
     readonly_fields = ("edit",)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductLineInline]
+    inlines = [ProductLineInline, AttributeValueProductInline]
 
 
 class ProductLineAdmin(admin.ModelAdmin):
