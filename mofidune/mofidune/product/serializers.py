@@ -71,12 +71,14 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name")
     product_line = ProductLineSerializer(many=True)
     attribute = serializers.SerializerMethodField()
+    # attribute_value = AttributeValueSerializer(many=True)
 
     class Meta:
         model = Product
         fields = [
             "name",
             "slug",
+            "pid",
             "description",
             # "brand",
             # "category",
@@ -121,9 +123,12 @@ class ProductCategorySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         x = data.pop("product_line")
-        price = x[0]["price"]
-        image = x[0]["product_image"]
-        data.update({"price": price})
-        data.update({"image": image})
+
+        if x:
+
+            price = x[0]["price"]
+            image = x[0]["product_image"]
+            data.update({"price": price})
+            data.update({"image": image})
 
         return data
