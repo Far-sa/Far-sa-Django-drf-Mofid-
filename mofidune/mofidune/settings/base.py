@@ -29,6 +29,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     # Internal Apps
     "mofidune.product",
+    "mofidune.cart",
+    "mofidune.order",
+    "mofidune.coupons",
+    "mofidune.payment",
+    "mofidune.shipping",
 ]
 
 MIDDLEWARE = [

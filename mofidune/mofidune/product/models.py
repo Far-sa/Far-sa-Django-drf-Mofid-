@@ -2,8 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
-
-
 # Create your models here.
 
 
@@ -43,6 +41,7 @@ class Product(models.Model):
     pid = models.CharField(max_length=10, unique=True)
     description = models.TextField(blank=True)
     is_digital = models.BooleanField(default=False)
+    compare_price = models.DecimalField(max_digits=6, decimal_places=2)
     category = TreeForeignKey(
         "Category", on_delete=models.PROTECT, null=True, blank=True
     )

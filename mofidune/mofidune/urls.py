@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register(r"category", views.CategoryViewSet)
 router.register(r"product", views.ProductViewSet)
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
@@ -18,4 +19,8 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
+    path("api/orders/", include("mofidune.order.urls")),
+    path("api/cart/", include("mofidune.cart.urls")),
+    path("api/coupons/", include("mofidune.coupons.urls")),
+    path("api/payment/", include("mofidune.payment.urls")),
 ]
