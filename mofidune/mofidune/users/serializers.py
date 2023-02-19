@@ -2,6 +2,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext as _
+from django_countries.serializers import CountryFieldMixin
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -180,3 +181,45 @@ class UserMiniSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ["username", "profile_picture", "gender", "phone_number"]
+
+
+class ShippingAddressSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    """
+    Serializer class to seralize address of type shipping
+
+    For shipping address, automatically set address type to shipping
+    """
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Address
+        fields = "__all__"
+        read_only_fields = ("address_type",)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["address_type"] = "S"
+
+        return representation
+
+
+class BillingAddressSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    """
+    Serializer class to seralize address of type billing
+
+    For billing address, automatically set address type to billing
+    """
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Address
+        fields = "__all__"
+        read_only_fields = ("address_type",)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["address_type"] = "B"
+
+        return representation

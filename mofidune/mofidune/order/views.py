@@ -1,24 +1,25 @@
-from core.decorators import time_calculator
+# from core.decorators import time_calculator
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
-from notifications.utils import push_notifications
+
+# from notifications.utils import push_notifications
 from rest_framework import exceptions, permissions, status
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from user_profile.models import Address
+
+from mofidune.users.models import Address
 
 from .models import Order, OrderItem, Product
-from .serializers import (OrderItemMiniSerializer, OrderItemSerializer,
-                          OrderMiniSerializer, OrderSerializer)
+from .serializers import OrderItemMiniSerializer
 
 
 class OrderView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    @time_calculator
-    def time(self):
-        return 0
+    # @time_calculator
+    # def time(self):
+    #     return 0
 
     def post(self, request, pk, *args, **kwargs):
         user = request.user
@@ -36,11 +37,11 @@ class OrderView(APIView):
         order = Order().create_order(user, order_number, user_address, True)
         order_item = OrderItem().create_order_item(order, product, quantity, total)
         serializer = OrderItemMiniSerializer(order_item)
-        push_notifications(
-            user,
-            "Request Order",
-            "your order: #" + str(order_number) + " has been sent successfully.",
-        )
+        # push_notifications(
+        #     user,
+        #     "Request Order",
+        #     "your order: #" + str(order_number) + " has been sent successfully.",
+        # )
         self.time()
         # TODO Payment Integration here.
         # TODO send Email to seller and buyer

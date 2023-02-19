@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     # Local Apps
     "mofidune.product",
     "mofidune.users",
+    "mofidune.order",
+    "mofidune.cart",
+    "mofidune.checkout",
 ]
 
 MIDDLEWARE = [
