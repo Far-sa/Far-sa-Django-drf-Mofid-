@@ -1,13 +1,9 @@
+from django.contrib.auth.models import User
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from .models import (
-    Attribute,
-    AttributeValue,
-    Category,
-    Product,
-    ProductImage,
-    ProductLine,
-)
+from .models import (Attribute, AttributeValue, Category, Product,
+                     ProductImage, ProductLine)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -132,3 +128,16 @@ class ProductCategorySerializer(serializers.ModelSerializer):
             data.update({"image": image})
 
         return data
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    seller = serializers.SlugRelatedField(slug_field="username", queryset=User.objects)
+    category = serializers.SerializerMethodField()
+    image = Base64ImageField()
+
+    def get_category(self, obj):
+        return obj.category.name
+
+    class Meta:
+        model = Product
+        exclude = "modified"

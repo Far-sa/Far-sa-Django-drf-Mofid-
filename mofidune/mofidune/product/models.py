@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
 # Create your models here.
+
+User = get_user_model()
 
 
 class ActiveManager(models.Manager):
@@ -36,6 +39,9 @@ class Category(MPTTModel):
 
 class Product(models.Model):
     name = models.CharField(max_length=235)
+    seller = models.ForeignKey(
+        User, related_name="user_product", on_delete=models.CASCADE
+    )
     description = models.TextField(blank=True)
     slug = models.SlugField(max_length=255)
     pid = models.CharField(max_length=10, unique=True)
@@ -210,3 +216,10 @@ class ProductTypeAttribute(models.Model):
 
     class Meta:
         unique_together = ("product_type", "attribute")
+
+
+# class ProductViews(models.Model):
+#     ip = models.CharField(max_length=250)
+#     product = models.ForeignKey(
+#         Product, related_name="product_views", on_delete=models.CASCADE
+#     )
