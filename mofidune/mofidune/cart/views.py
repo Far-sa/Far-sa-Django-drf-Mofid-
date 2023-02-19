@@ -1,6 +1,7 @@
 # Create your views here.
 from django.shortcuts import get_object_or_404, render
-from django.utils.translation import ugettext_lazy as _
+
+# from django.utils.translation import ugettext_lazy as _
 from rest_framework import permissions, status
 from rest_framework.exceptions import NotAcceptable, PermissionDenied, ValidationError
 from rest_framework.generics import (

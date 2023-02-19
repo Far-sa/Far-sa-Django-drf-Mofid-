@@ -18,7 +18,9 @@ urlpatterns = [
     # account/login/google
     path("accounts/", include("allauth.urls")),
     # path('api/products/', include('products.urls', namespace='products')),
-    path("", include("mofidune.order.urls")),
+    path("api/user/order/", include("mofidune.order.urls")),
+    path("api/user/cart/", include("mofidune.cart.urls")),
+    path("api/products", include("mofidune.product.urls")),
     # path("api/user/payments/", include("payment.urls", namespace="payment")),
     path("api/schema", SpectacularAPIView.as_view(), name="schema"),
     path(
